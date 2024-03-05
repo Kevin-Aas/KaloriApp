@@ -17,7 +17,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    final int[] totalKalori = {0};
+    String totalKcal = "0";
+    String newKcal = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,50 +27,84 @@ public class MainActivity extends AppCompatActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        TextView totalKaloriVisning = findViewById(R.id.totalKaloriView);
+        TextView totalKcalView = findViewById(R.id.totalKcal);
 
-        ArrayList<String> kaloriListe = new ArrayList<>();
+        ArrayList<String> kcalList = new ArrayList<>();
+        ListView lw = findViewById(R.id.listKcal);
 
-        ListView listeVisning = findViewById(R.id.listeVisning);
-        ArrayAdapter<String> arr = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, kaloriListe);
-        listeVisning.setAdapter(arr);
-
-        EditText kalorier = findViewById(R.id.kalorier);
-        kalorier.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String kalori = kalorier.getText().toString();
-                if (!kalori.equals("")) {
-                    kaloriListe.add(kalori);
-                    listeVisning.setAdapter(arr);
-
-                    totalKalori[0] = 0;
-                    for (String k : kaloriListe) {
-                        int kInt = Integer.parseInt(k);
-                        totalKalori[0] += kInt;
-                    }
-
-                }
-                kalorier.setText("");
-
-                String tot = Integer.toString(totalKalori[0]);
-                totalKaloriVisning.setText(tot);
-            }
-        });
+        ArrayAdapter<String> arr = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, kcalList);
+        lw.setAdapter(arr);
 
         Button reset = findViewById(R.id.reset);
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                totalKalori[0] = 0;
-                String tot = Integer.toString(totalKalori[0]);
-                totalKaloriVisning.setText(tot);
-                kaloriListe.clear();
+                totalKcal = "0";
+                newKcal = "";
+                totalKcalView.setText("0");
+                kcalList.clear();
                 arr.clear();
-                listeVisning.setAdapter(arr);
+                lw.setAdapter(arr);
             }
         });
 
+        // Get the buttons
+        Button button0 = findViewById(R.id.button0);
+        Button button1 = findViewById(R.id.button1);
+        Button button2 = findViewById(R.id.button2);
+        Button button3 = findViewById(R.id.button3);
+        Button button4 = findViewById(R.id.button4);
+        Button button5 = findViewById(R.id.button5);
+        Button button6 = findViewById(R.id.button6);
+        Button button7 = findViewById(R.id.button7);
+        Button button8 = findViewById(R.id.button8);
+        Button button9 = findViewById(R.id.button9);
+        Button[] buttons = {
+                button0, button1, button2, button3, button4,
+                button5, button6, button7, button8, button9
+        };
 
+
+        for (int i=0; i<10; i++) {
+            Button b = buttons[i];
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String number = b.getText().toString();
+                    if (number.equals("0") && newKcal.equals("")) {
+                        // No leading zero
+                    }
+                    else if (newKcal.length() > 3) {
+                        // Don't want to overfill the screen
+                    }
+                    else {
+                        newKcal += number;
+                        totalKcalView.setText(totalKcal+ "+(" + newKcal + ")");
+                    }
+                }
+            });
+        }
+
+        // Add button
+        Button add = findViewById(R.id.add);
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!newKcal.equals("")) {
+                    totalKcal = addIntStrings(totalKcal, newKcal);
+                    totalKcalView.setText(totalKcal);
+                    kcalList.add(newKcal);
+                    lw.setAdapter(arr);
+                    newKcal = "";
+                }
+            }
+        });
+
+    }
+    public String addIntStrings(String s1, String s2) {
+        int i1 = Integer.parseInt(s1);
+        int i2 = Integer.parseInt(s2);
+        int tot = i1 + i2;
+        return "" + tot;
     }
 }
